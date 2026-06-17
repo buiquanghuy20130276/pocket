@@ -1,0 +1,47 @@
+{
+  "expo": {
+    "name": "SnapLedger",
+    "slug": "snapledger",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "dark",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#000000"
+    },
+    "scheme": "snapledger",
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "com.snapledger.app",
+      "entitlements": {
+        "com.apple.security.application-groups": [
+          "group.com.snapledger.app"
+        ]
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#000000"
+      },
+      "package": "com.snapledger.app",
+      "permissions": [
+        "android.permission.CAMERA",
+        "android.permission.RECORD_AUDIO",
+        "android.permission.RECEIVE_BOOT_COMPLETED"
+      ]
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Cho phép SnapLedger truy cập Camera để chia sẻ khoảnh khắc với bạn bè.",
+          "microphonePermission": "Cho phép SnapLedger truy cập Micro để quay video."
+        }
+      ]
+    ]
+  }
+}

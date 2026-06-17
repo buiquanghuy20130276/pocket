@@ -1,0 +1,170 @@
+
+<style>
+  .screens-wrap { display: flex; gap: 20px; justify-content: center; align-items: flex-start; padding: 24px 0; flex-wrap: wrap; }
+  .phone { width: 160px; background: var(--color-background-primary); border-radius: 32px; border: 1.5px solid var(--color-border-secondary); overflow: hidden; position: relative; flex-shrink: 0; }
+  .phone-inner { padding: 0; }
+  .status-bar { height: 36px; display: flex; align-items: flex-end; justify-content: space-between; padding: 0 14px 6px; background: transparent; }
+  .status-time { font-size: 11px; font-weight: 500; color: var(--color-text-primary); }
+  .status-icons { display: flex; gap: 4px; align-items: center; }
+  .status-icons i { font-size: 12px; color: var(--color-text-primary); }
+  .screen-label { font-size: 11px; color: var(--color-text-secondary); text-align: center; margin-top: 10px; letter-spacing: 0.3px; }
+  .notch { width: 60px; height: 22px; background: var(--color-background-primary); border-radius: 0 0 14px 14px; position: absolute; top: 0; left: 50%; transform: translateX(-50%); z-index: 10; border: 1.5px solid var(--color-border-secondary); border-top: none; }
+</style>
+
+<div class="screens-wrap">
+
+  <!-- Screen 1: Splash / Welcome -->
+  <div>
+    <div class="phone" style="height:320px;">
+      <div class="notch"></div>
+      <div class="status-bar"><span class="status-time">9:41</span><span class="status-icons"><i class="ti ti-wifi"></i><i class="ti ti-battery"></i></span></div>
+      <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:240px;padding:0 20px;gap:14px;">
+        <div style="width:60px;height:60px;border-radius:18px;background:#F1EFE8;display:flex;align-items:center;justify-content:center;">
+          <i class="ti ti-polaroid" style="font-size:28px;color:#5F5E5A;"></i>
+        </div>
+        <div style="text-align:center;">
+          <p style="font-size:16px;font-weight:500;color:var(--color-text-primary);margin:0 0 4px;">SnapLedger</p>
+          <p style="font-size:10px;color:var(--color-text-secondary);margin:0;line-height:1.4;">Share moments.<br>Track money.</p>
+        </div>
+        <div style="width:100%;display:flex;flex-direction:column;gap:7px;margin-top:8px;">
+          <div style="background:#2C2C2A;border-radius:12px;padding:9px;text-align:center;">
+            <span style="font-size:11px;font-weight:500;color:#F1EFE8;">Continue with phone</span>
+          </div>
+          <div style="background:var(--color-background-secondary);border-radius:12px;padding:9px;text-align:center;border:0.5px solid var(--color-border-tertiary);">
+            <span style="font-size:11px;font-weight:500;color:var(--color-text-primary);">Sign in with Apple</span>
+          </div>
+        </div>
+        <p style="font-size:9px;color:var(--color-text-tertiary);text-align:center;margin:0;line-height:1.4;">By continuing you agree to our<br>Terms & Privacy Policy</p>
+      </div>
+    </div>
+    <p class="screen-label">Welcome</p>
+  </div>
+
+  <!-- Screen 2: Phone OTP Input -->
+  <div>
+    <div class="phone" style="height:320px;">
+      <div class="notch"></div>
+      <div class="status-bar"><span class="status-time">9:41</span><span class="status-icons"><i class="ti ti-wifi"></i><i class="ti ti-battery"></i></span></div>
+      <div style="padding:10px 16px 0;display:flex;flex-direction:column;gap:14px;">
+        <div>
+          <p style="font-size:14px;font-weight:500;color:var(--color-text-primary);margin:0 0 2px;">Your phone number</p>
+          <p style="font-size:9px;color:var(--color-text-secondary);margin:0;">We'll send a one-time code</p>
+        </div>
+        <div style="background:var(--color-background-secondary);border-radius:10px;padding:10px 12px;display:flex;align-items:center;gap:8px;border:0.5px solid var(--color-border-secondary);">
+          <span style="font-size:11px;color:var(--color-text-secondary);">🇻🇳 +84</span>
+          <div style="width:0.5px;height:14px;background:var(--color-border-secondary);"></div>
+          <span style="font-size:11px;color:var(--color-text-tertiary);">Enter phone number</span>
+        </div>
+        <div style="background:#2C2C2A;border-radius:12px;padding:9px;text-align:center;">
+          <span style="font-size:11px;font-weight:500;color:#F1EFE8;">Send code</span>
+        </div>
+        <div style="margin-top:4px;">
+          <div style="background:var(--color-background-secondary);border-radius:10px;padding:12px;display:flex;flex-direction:column;gap:10px;border:0.5px solid var(--color-border-tertiary);">
+            <p style="font-size:9px;color:var(--color-text-secondary);margin:0;text-align:center;">Enter 6-digit code</p>
+            <div style="display:flex;gap:5px;justify-content:center;">
+              <div style="width:22px;height:28px;border-radius:6px;background:var(--color-background-primary);border:0.5px solid var(--color-border-secondary);display:flex;align-items:center;justify-content:center;"><span style="font-size:13px;font-weight:500;color:var(--color-text-primary);">3</span></div>
+              <div style="width:22px;height:28px;border-radius:6px;background:var(--color-background-primary);border:0.5px solid var(--color-border-secondary);display:flex;align-items:center;justify-content:center;"><span style="font-size:13px;font-weight:500;color:var(--color-text-primary);">8</span></div>
+              <div style="width:22px;height:28px;border-radius:6px;background:var(--color-background-primary);border:1.5px solid #2C2C2A;display:flex;align-items:center;justify-content:center;"><span style="font-size:13px;font-weight:500;color:var(--color-text-primary);">_</span></div>
+              <div style="width:22px;height:28px;border-radius:6px;background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);"></div>
+              <div style="width:22px;height:28px;border-radius:6px;background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);"></div>
+              <div style="width:22px;height:28px;border-radius:6px;background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);"></div>
+            </div>
+            <p style="font-size:9px;color:var(--color-text-tertiary);margin:0;text-align:center;">Resend in 0:42</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <p class="screen-label">Phone & OTP</p>
+  </div>
+
+  <!-- Screen 3: Profile Setup -->
+  <div>
+    <div class="phone" style="height:320px;">
+      <div class="notch"></div>
+      <div class="status-bar"><span class="status-time">9:41</span><span class="status-icons"><i class="ti ti-wifi"></i><i class="ti ti-battery"></i></span></div>
+      <div style="padding:10px 16px 0;display:flex;flex-direction:column;gap:12px;">
+        <div>
+          <p style="font-size:14px;font-weight:500;color:var(--color-text-primary);margin:0 0 2px;">Set up profile</p>
+          <p style="font-size:9px;color:var(--color-text-secondary);margin:0;">Your friends will see this</p>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;">
+          <div style="width:48px;height:48px;border-radius:50%;background:#E1F5EE;display:flex;align-items:center;justify-content:center;position:relative;flex-shrink:0;">
+            <i class="ti ti-user" style="font-size:20px;color:#0F6E56;"></i>
+            <div style="position:absolute;bottom:0;right:0;width:14px;height:14px;background:#2C2C2A;border-radius:50%;display:flex;align-items:center;justify-content:center;border:1.5px solid var(--color-background-primary);">
+              <i class="ti ti-plus" style="font-size:8px;color:#F1EFE8;"></i>
+            </div>
+          </div>
+          <div style="flex:1;display:flex;flex-direction:column;gap:5px;">
+            <div style="background:var(--color-background-secondary);border-radius:8px;padding:7px 10px;border:0.5px solid var(--color-border-secondary);">
+              <span style="font-size:10px;color:var(--color-text-primary);">Nguyen Van A</span>
+            </div>
+            <div style="background:var(--color-background-secondary);border-radius:8px;padding:7px 10px;border:0.5px solid var(--color-border-tertiary);">
+              <span style="font-size:10px;color:var(--color-text-tertiary);">@username</span>
+            </div>
+          </div>
+        </div>
+        <div>
+          <p style="font-size:9px;font-weight:500;color:var(--color-text-secondary);margin:0 0 5px;">Monthly budget</p>
+          <div style="background:var(--color-background-secondary);border-radius:8px;padding:8px 10px;border:0.5px solid var(--color-border-secondary);display:flex;align-items:center;justify-content:space-between;">
+            <span style="font-size:10px;color:var(--color-text-primary);">5,000,000</span>
+            <span style="font-size:10px;color:var(--color-text-secondary);">VND</span>
+          </div>
+        </div>
+        <div style="background:#2C2C2A;border-radius:12px;padding:9px;text-align:center;margin-top:4px;">
+          <span style="font-size:11px;font-weight:500;color:#F1EFE8;">Continue</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:6px;margin-top:2px;">
+          <div style="flex:1;height:2px;border-radius:2px;background:#2C2C2A;"></div>
+          <div style="flex:1;height:2px;border-radius:2px;background:var(--color-border-tertiary);"></div>
+          <div style="flex:1;height:2px;border-radius:2px;background:var(--color-border-tertiary);"></div>
+        </div>
+      </div>
+    </div>
+    <p class="screen-label">Profile setup</p>
+  </div>
+
+  <!-- Screen 4: Circle (Create/Join) -->
+  <div>
+    <div class="phone" style="height:320px;">
+      <div class="notch"></div>
+      <div class="status-bar"><span class="status-time">9:41</span><span class="status-icons"><i class="ti ti-wifi"></i><i class="ti ti-battery"></i></span></div>
+      <div style="padding:10px 16px 0;display:flex;flex-direction:column;gap:12px;">
+        <div>
+          <p style="font-size:14px;font-weight:500;color:var(--color-text-primary);margin:0 0 2px;">Your circle</p>
+          <p style="font-size:9px;color:var(--color-text-secondary);margin:0;">Share photos with people you love</p>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:7px;">
+          <div style="background:#F1EFE8;border-radius:12px;padding:12px;border:0.5px solid #D3D1C7;display:flex;gap:10px;align-items:center;">
+            <div style="width:32px;height:32px;background:#D3D1C7;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+              <i class="ti ti-plus" style="font-size:16px;color:#444441;"></i>
+            </div>
+            <div>
+              <p style="font-size:11px;font-weight:500;color:#2C2C2A;margin:0 0 1px;">Create a circle</p>
+              <p style="font-size:9px;color:#5F5E5A;margin:0;">Invite friends & family</p>
+            </div>
+          </div>
+          <div style="background:var(--color-background-primary);border-radius:12px;padding:12px;border:0.5px solid var(--color-border-secondary);display:flex;gap:10px;align-items:center;">
+            <div style="width:32px;height:32px;background:var(--color-background-secondary);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+              <i class="ti ti-door-enter" style="font-size:16px;color:var(--color-text-secondary);"></i>
+            </div>
+            <div>
+              <p style="font-size:11px;font-weight:500;color:var(--color-text-primary);margin:0 0 1px;">Join with invite code</p>
+              <p style="font-size:9px;color:var(--color-text-secondary);margin:0;">Someone shared a code</p>
+            </div>
+          </div>
+        </div>
+        <div style="background:var(--color-background-secondary);border-radius:10px;padding:10px 12px;border:0.5px solid var(--color-border-secondary);display:flex;align-items:center;justify-content:space-between;">
+          <span style="font-size:10px;color:var(--color-text-tertiary);">Enter code e.g. AB3X9K</span>
+          <i class="ti ti-arrow-right" style="font-size:14px;color:var(--color-text-tertiary);"></i>
+        </div>
+        <div style="display:flex;align-items:center;gap:6px;margin-top:2px;">
+          <div style="flex:1;height:2px;border-radius:2px;background:var(--color-border-tertiary);"></div>
+          <div style="flex:1;height:2px;border-radius:2px;background:#2C2C2A;"></div>
+          <div style="flex:1;height:2px;border-radius:2px;background:var(--color-border-tertiary);"></div>
+        </div>
+      </div>
+    </div>
+    <p class="screen-label">Create / join circle</p>
+  </div>
+
+</div>

@@ -1,0 +1,147 @@
+
+<style>
+  .screens-wrap { display: flex; gap: 20px; justify-content: center; align-items: flex-start; padding: 24px 0; flex-wrap: wrap; }
+  .phone { width: 160px; background: var(--color-background-primary); border-radius: 32px; border: 1.5px solid var(--color-border-secondary); overflow: hidden; position: relative; flex-shrink: 0; }
+  .status-bar { height: 36px; display: flex; align-items: flex-end; justify-content: space-between; padding: 0 14px 6px; }
+  .status-time { font-size: 11px; font-weight: 500; }
+  .status-icons { display: flex; gap: 4px; align-items: center; }
+  .status-icons i { font-size: 12px; }
+  .screen-label { font-size: 11px; color: var(--color-text-secondary); text-align: center; margin-top: 10px; letter-spacing: 0.3px; }
+  .notch { width: 60px; height: 22px; background: var(--color-background-primary); border-radius: 0 0 14px 14px; position: absolute; top: 0; left: 50%; transform: translateX(-50%); z-index: 10; border: 1.5px solid var(--color-border-secondary); border-top: none; }
+  .notch-dark { background: #111; border-color: #333; }
+</style>
+
+<div class="screens-wrap">
+
+  <!-- Screen 1: Camera viewfinder -->
+  <div>
+    <div class="phone" style="height:320px;background:#111;">
+      <div class="notch notch-dark"></div>
+      <div class="status-bar" style="background:transparent;">
+        <span class="status-time" style="color:#fff;">9:41</span>
+        <span class="status-icons" style="color:#fff;"><i class="ti ti-wifi" style="color:#fff;"></i><i class="ti ti-battery" style="color:#fff;"></i></span>
+      </div>
+      <!-- Viewfinder -->
+      <div style="margin:0 10px;border-radius:18px;overflow:hidden;height:200px;background:#1a1a1a;position:relative;">
+        <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;">
+          <div style="width:60px;height:60px;border-radius:50%;border:1px solid rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;">
+            <i class="ti ti-user" style="font-size:24px;color:rgba(255,255,255,0.3);"></i>
+          </div>
+        </div>
+        <!-- Grid overlay hint -->
+        <div style="position:absolute;inset:0;border:0.5px solid rgba(255,255,255,0.06);"></div>
+        <!-- Focus ring -->
+        <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-60%);width:36px;height:36px;border:1.5px solid rgba(255,220,0,0.8);border-radius:4px;"></div>
+        <!-- Flash toggle -->
+        <div style="position:absolute;top:10px;right:10px;width:24px;height:24px;background:rgba(0,0,0,0.4);border-radius:50%;display:flex;align-items:center;justify-content:center;">
+          <i class="ti ti-bolt" style="font-size:12px;color:#fff;"></i>
+        </div>
+        <!-- Flip camera -->
+        <div style="position:absolute;top:10px;left:10px;width:24px;height:24px;background:rgba(0,0,0,0.4);border-radius:50%;display:flex;align-items:center;justify-content:center;">
+          <i class="ti ti-camera-rotate" style="font-size:12px;color:#fff;"></i>
+        </div>
+      </div>
+      <!-- Bottom controls -->
+      <div style="padding:10px 14px 0;display:flex;align-items:center;justify-content:space-between;">
+        <div style="width:32px;height:32px;border-radius:8px;background:#222;border:0.5px solid #444;overflow:hidden;display:flex;align-items:center;justify-content:center;">
+          <i class="ti ti-photo" style="font-size:16px;color:#aaa;"></i>
+        </div>
+        <div style="width:52px;height:52px;border-radius:50%;border:3px solid #fff;display:flex;align-items:center;justify-content:center;">
+          <div style="width:40px;height:40px;border-radius:50%;background:#fff;"></div>
+        </div>
+        <div style="width:32px;height:32px;"></div>
+      </div>
+      <!-- Circle indicator -->
+      <div style="display:flex;align-items:center;justify-content:center;margin-top:6px;gap:5px;">
+        <div style="width:16px;height:16px;border-radius:50%;background:#222;border:0.5px solid #444;overflow:hidden;display:flex;align-items:center;justify-content:center;">
+          <i class="ti ti-user" style="font-size:8px;color:#aaa;"></i>
+        </div>
+        <span style="font-size:9px;color:#aaa;">Gia đình</span>
+        <i class="ti ti-chevron-down" style="font-size:10px;color:#666;"></i>
+      </div>
+    </div>
+    <p class="screen-label">Camera viewfinder</p>
+  </div>
+
+  <!-- Screen 2: Caption & send -->
+  <div>
+    <div class="phone" style="height:320px;">
+      <div class="notch"></div>
+      <div class="status-bar"><span class="status-time" style="color:var(--color-text-primary);">9:41</span><span class="status-icons"><i class="ti ti-wifi"></i><i class="ti ti-battery"></i></span></div>
+      <!-- Photo preview -->
+      <div style="margin:0 10px;border-radius:16px;overflow:hidden;height:160px;background:#D3D1C7;position:relative;">
+        <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:4px;">
+          <i class="ti ti-photo" style="font-size:24px;color:#888780;"></i>
+          <span style="font-size:9px;color:#888780;">Photo preview</span>
+        </div>
+        <!-- Retake btn -->
+        <div style="position:absolute;top:8px;left:8px;background:rgba(0,0,0,0.45);border-radius:20px;padding:3px 8px;display:flex;align-items:center;gap:3px;">
+          <i class="ti ti-arrow-left" style="font-size:9px;color:#fff;"></i>
+          <span style="font-size:9px;color:#fff;">Retake</span>
+        </div>
+        <!-- Expense badge -->
+        <div style="position:absolute;bottom:8px;right:8px;background:rgba(255,255,255,0.92);border-radius:20px;padding:3px 8px;display:flex;align-items:center;gap:3px;">
+          <i class="ti ti-coin" style="font-size:10px;color:#0F6E56;"></i>
+          <span style="font-size:9px;color:#0F6E56;font-weight:500;">10,000 ₫ detected</span>
+        </div>
+      </div>
+      <!-- Caption input -->
+      <div style="padding:8px 12px 0;display:flex;flex-direction:column;gap:7px;">
+        <div style="background:var(--color-background-secondary);border-radius:10px;padding:8px 10px;border:0.5px solid var(--color-border-secondary);display:flex;align-items:center;gap:6px;">
+          <i class="ti ti-pencil" style="font-size:12px;color:var(--color-text-tertiary);flex-shrink:0;"></i>
+          <span style="font-size:10px;color:var(--color-text-primary);">Ăn sáng 10k ☀️</span>
+          <span style="width:1.5px;height:12px;background:var(--color-text-primary);margin-left:1px;"></span>
+        </div>
+        <!-- Category auto-detected -->
+        <div style="display:flex;align-items:center;gap:5px;">
+          <div style="background:#E1F5EE;border-radius:6px;padding:3px 7px;display:flex;align-items:center;gap:3px;">
+            <i class="ti ti-salad" style="font-size:10px;color:#0F6E56;"></i>
+            <span style="font-size:9px;color:#0F6E56;font-weight:500;">Food & Drink</span>
+          </div>
+          <span style="font-size:9px;color:var(--color-text-tertiary);">auto-detected</span>
+          <i class="ti ti-pencil" style="font-size:10px;color:var(--color-text-tertiary);margin-left:auto;"></i>
+        </div>
+        <!-- Send button -->
+        <div style="background:#2C2C2A;border-radius:12px;padding:9px;display:flex;align-items:center;justify-content:center;gap:6px;">
+          <i class="ti ti-send" style="font-size:13px;color:#F1EFE8;"></i>
+          <span style="font-size:11px;font-weight:500;color:#F1EFE8;">Send to Gia đình</span>
+        </div>
+      </div>
+    </div>
+    <p class="screen-label">Caption & expense tag</p>
+  </div>
+
+  <!-- Screen 3: Sending / Success -->
+  <div>
+    <div class="phone" style="height:320px;">
+      <div class="notch"></div>
+      <div class="status-bar"><span class="status-time" style="color:var(--color-text-primary);">9:41</span><span class="status-icons"><i class="ti ti-wifi"></i><i class="ti ti-battery"></i></span></div>
+      <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:250px;padding:0 20px;gap:14px;">
+        <!-- Success state -->
+        <div style="width:56px;height:56px;border-radius:50%;background:#E1F5EE;display:flex;align-items:center;justify-content:center;">
+          <i class="ti ti-check" style="font-size:26px;color:#0F6E56;"></i>
+        </div>
+        <div style="text-align:center;">
+          <p style="font-size:13px;font-weight:500;color:var(--color-text-primary);margin:0 0 3px;">Sent to Gia đình!</p>
+          <p style="font-size:9px;color:var(--color-text-secondary);margin:0;line-height:1.5;">Your photo is on their<br>home screen widget now</p>
+        </div>
+        <!-- Expense logged card -->
+        <div style="background:#F1EFE8;border-radius:12px;padding:10px 12px;width:100%;border:0.5px solid #D3D1C7;">
+          <div style="display:flex;align-items:center;gap:6px;margin-bottom:5px;">
+            <i class="ti ti-coin" style="font-size:12px;color:#0F6E56;"></i>
+            <span style="font-size:9px;font-weight:500;color:#2C2C2A;">Expense logged</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:baseline;">
+            <span style="font-size:9px;color:#5F5E5A;">Ăn sáng 10k · Food & Drink</span>
+            <span style="font-size:11px;font-weight:500;color:#2C2C2A;">10,000 ₫</span>
+          </div>
+        </div>
+        <div style="background:var(--color-background-secondary);border-radius:10px;padding:8px;text-align:center;width:100%;border:0.5px solid var(--color-border-tertiary);">
+          <span style="font-size:10px;color:var(--color-text-secondary);">Take another photo</span>
+        </div>
+      </div>
+    </div>
+    <p class="screen-label">Sent & expense logged</p>
+  </div>
+
+</div>
