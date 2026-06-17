@@ -14,7 +14,17 @@
     "scheme": "snapledger",
     "ios": {
       "supportsTablet": false,
-      "bundleIdentifier": "com.snapledger.app",
+      "bundleIdentifier": "huyfs",
+      "googleServicesFile": "./client_547463670305-099tppek4d3bn0r95d63r6mipgil05m3.apps.googleusercontent.com.plist",
+      "infoPlist": {
+        "CFBundleURLTypes": [
+          {
+            "CFBundleURLSchemes": [
+              "com.googleusercontent.apps.547463670305-099tppek4d3bn0r95d63r6mipgil05m3"
+            ]
+          }
+        ]
+      },
       "entitlements": {
         "com.apple.security.application-groups": [
           "group.com.snapledger.app"

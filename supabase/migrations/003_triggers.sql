@@ -84,12 +84,12 @@ BEGIN
   -- Seed standard category limits for this user
   INSERT INTO public.expense_categories (user_id, name, icon, color, budget_limit, is_default)
   VALUES
-    (NEW.id, 'Ăn uống', 'fork.knife', '#FF9500', 5000000, false),
-    (NEW.id, 'Di chuyển', 'car.fill', '#5AC8FA', 1000000, false),
-    (NEW.id, 'Mua sắm', 'cart.fill', '#FF2D55', 3000000, false),
-    (NEW.id, 'Sức khỏe', 'heart.text.square.fill', '#4CD964', 1000000, false),
-    (NEW.id, 'Giải trí', 'gamecontroller.fill', '#5856D6', 1500000, false),
-    (NEW.id, 'Chi phí khác', 'ellipsis.circle.fill', '#8E8E93', 1000000, false);
+    (NEW.id, 'Ăn uống', 'restaurant', '#FF9500', 5000000, false),
+    (NEW.id, 'Di chuyển', 'car', '#5AC8FA', 1000000, false),
+    (NEW.id, 'Mua sắm', 'bag-handle', '#FF2D55', 3000000, false),
+    (NEW.id, 'Sức khỏe', 'heart', '#4CD964', 1000000, false),
+    (NEW.id, 'Giải trí', 'game-controller', '#5856D6', 1500000, false),
+    (NEW.id, 'Chi phí khác', 'ellipsis-horizontal-circle', '#8E8E93', 1000000, false);
 
   RETURN NEW;
 END;

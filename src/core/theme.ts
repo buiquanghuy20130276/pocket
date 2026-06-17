@@ -48,3 +48,25 @@ export const THEME = {
     solid: "#B4B2A9"
   }
 };
+
+const ICON_MAP: Record<string, string> = {
+  "fork.knife": "restaurant",
+  "car.fill": "car",
+  "cart.fill": "bag-handle",
+  "heart.text.square.fill": "heart",
+  "gamecontroller.fill": "game-controller",
+  "ellipsis.circle.fill": "ellipsis-horizontal-circle",
+  "book.fill": "book",
+  "house.fill": "home",
+  "airplane": "airplane",
+  "cup.and.saucer.fill": "cafe",
+  "dumbbell.fill": "barbell",
+  "pawprint.fill": "paw",
+  "gift.fill": "gift",
+};
+
+export const mapIconToIonicons = (icon: string | null): string => {
+  if (!icon) return "pricetag";
+  return ICON_MAP[icon] || icon;
+};
+

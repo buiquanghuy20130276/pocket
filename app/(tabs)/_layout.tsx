@@ -22,7 +22,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="feed"
         options={{
-          title: "Home",
+          title: "Nhật ký",
           tabBarIcon: ({ color, focused }) => (
             <Ionicons name={focused ? "home" : "home-outline"} size={22} color={color} />
           ),
@@ -31,7 +31,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="expense"
         options={{
-          title: "Expense",
+          title: "Ví chi tiêu",
           tabBarIcon: ({ color, focused }) => (
             <Ionicons name={focused ? "wallet" : "wallet-outline"} size={22} color={color} />
           ),
@@ -40,7 +40,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="camera"
         options={{
-          title: "Camera",
+          title: "Máy ảnh",
           tabBarIcon: ({ color, focused }) => (
             <Ionicons name={focused ? "camera" : "camera-outline"} size={22} color={color} />
           ),
@@ -49,7 +49,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="settings"
         options={{
-          title: "Profile",
+          title: "Cài đặt",
           tabBarIcon: ({ color, focused }) => (
             <Ionicons name={focused ? "person" : "person-outline"} size={22} color={color} />
           ),

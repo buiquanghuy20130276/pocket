@@ -12,7 +12,7 @@ import {
   Alert,
 } from "react-native";
 import { useAuthStore, useExpenseStore, Expense, ExpenseCategory } from "../../src/core/store";
-import { THEME } from "../../src/core/theme";
+import { THEME, mapIconToIonicons } from "../../src/core/theme";
 import { Ionicons } from "@expo/vector-icons";
 import Svg, { Circle as SvgCircle } from "react-native-svg";
 import { supabase } from "../../src/core/supabaseClient";
@@ -34,6 +34,9 @@ export default function ExpenseScreen() {
   const [activeSegment, setActiveSegment] = useState<"dashboard" | "stats" | "alerts">("dashboard");
   const [isAddModalVisible, setIsAddModalVisible] = useState(false);
   const [selectedExpense, setSelectedExpense] = useState<Expense | null>(null);
+  const [monthDate, setMonthDate] = useState(new Date());
+  const [isMonthPickerVisible, setIsMonthPickerVisible] = useState(false);
+  const [pickerYear, setPickerYear] = useState(new Date().getFullYear());
 
   // Form states
   const [amount, setAmount] = useState("");
@@ -42,9 +45,21 @@ export default function ExpenseScreen() {
 
   useEffect(() => {
     if (profile) {
-      fetchDashboardData(profile.id);
+      fetchDashboardData(profile.id, monthDate);
     }
-  }, [profile]);
+  }, [profile, monthDate]);
+
+  const selectMonth = (year: number, month: number) => {
+    const newDate = new Date(year, month, 1);
+    setMonthDate(newDate);
+    setIsMonthPickerVisible(false);
+  };
+
+  const MONTHS_VI = [
+    "Tháng 1", "Tháng 2", "Tháng 3", "Tháng 4",
+    "Tháng 5", "Tháng 6", "Tháng 7", "Tháng 8",
+    "Tháng 9", "Tháng 10", "Tháng 11", "Tháng 12",
+  ];
 
   const handleAddExpense = async () => {
     const parsedAmount = parseFloat(amount);
@@ -79,6 +94,15 @@ export default function ExpenseScreen() {
     let icon = "cart";
     
     if (cat) {
+      if (cat.icon) {
+        icon = mapIconToIonicons(cat.icon);
+      }
+      if (cat.color) {
+        color = cat.color;
+        bg = cat.color + "22"; // 13% opacity hex
+      }
+      
+      // Override or fallback logic based on names
       if (cat.name.includes("Ăn uống") || cat.name.includes("Food")) {
         color = THEME.green.solid;
         bg = THEME.green.bg;
@@ -148,11 +172,21 @@ export default function ExpenseScreen() {
       {/* Header */}
       <View style={styles.header}>
         <View style={styles.headerLeft}>
-          <Text style={styles.headerTitle}>Expense</Text>
-          <View style={styles.monthPill}>
-            <Text style={styles.monthPillText}>June 2025</Text>
-            <Ionicons name="chevron-down" size={10} color={THEME.textTertiary} />
-          </View>
+          <Text style={styles.headerTitle}>Chi tiêu</Text>
+          {/* Tappable month pill — opens picker modal */}
+          <TouchableOpacity
+            style={styles.monthPill}
+            onPress={() => {
+              setPickerYear(monthDate.getFullYear());
+              setIsMonthPickerVisible(true);
+            }}
+          >
+            <Ionicons name="calendar-outline" size={13} color={THEME.textSecondary} style={{ marginRight: 4 }} />
+            <Text style={styles.monthPillText}>
+              {monthDate.toLocaleString("vi-VN", { month: "long", year: "numeric" })}
+            </Text>
+            <Ionicons name="chevron-down" size={12} color={THEME.textTertiary} style={{ marginLeft: 2 }} />
+          </TouchableOpacity>
         </View>
 
         {/* Floating trigger add */}
@@ -167,6 +201,78 @@ export default function ExpenseScreen() {
         </TouchableOpacity>
       </View>
 
+      {/* Month Picker Modal */}
+      <Modal
+        visible={isMonthPickerVisible}
+        transparent={true}
+        animationType="fade"
+        onRequestClose={() => setIsMonthPickerVisible(false)}
+      >
+        <TouchableOpacity
+          style={styles.pickerOverlay}
+          activeOpacity={1}
+          onPress={() => setIsMonthPickerVisible(false)}
+        >
+          <View style={styles.pickerCard}>
+            {/* Year row */}
+            <View style={styles.pickerYearRow}>
+              <TouchableOpacity
+                style={styles.pickerYearBtn}
+                onPress={() => setPickerYear(y => y - 1)}
+              >
+                <Ionicons name="chevron-back" size={18} color={THEME.textPrimary} />
+              </TouchableOpacity>
+              <Text style={styles.pickerYearText}>{pickerYear}</Text>
+              <TouchableOpacity
+                style={styles.pickerYearBtn}
+                onPress={() => setPickerYear(y => y + 1)}
+                disabled={pickerYear >= new Date().getFullYear()}
+              >
+                <Ionicons
+                  name="chevron-forward"
+                  size={18}
+                  color={pickerYear >= new Date().getFullYear() ? THEME.textTertiary : THEME.textPrimary}
+                />
+              </TouchableOpacity>
+            </View>
+
+            {/* 3×4 month grid */}
+            <View style={styles.pickerMonthGrid}>
+              {MONTHS_VI.map((label, idx) => {
+                const isSelected =
+                  monthDate.getFullYear() === pickerYear &&
+                  monthDate.getMonth() === idx;
+                const isFuture =
+                  pickerYear > new Date().getFullYear() ||
+                  (pickerYear === new Date().getFullYear() && idx > new Date().getMonth());
+                return (
+                  <TouchableOpacity
+                    key={idx}
+                    style={[
+                      styles.pickerMonthCell,
+                      isSelected && styles.pickerMonthCellActive,
+                      isFuture && styles.pickerMonthCellDisabled,
+                    ]}
+                    onPress={() => !isFuture && selectMonth(pickerYear, idx)}
+                    disabled={isFuture}
+                  >
+                    <Text
+                      style={[
+                        styles.pickerMonthText,
+                        isSelected && styles.pickerMonthTextActive,
+                        isFuture && styles.pickerMonthTextDisabled,
+                      ]}
+                    >
+                      {label}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              })}
+            </View>
+          </View>
+        </TouchableOpacity>
+      </Modal>
+
       {/* Internal Sub Navigation segments */}
       <View style={styles.segmentRow}>
         <TouchableOpacity
@@ -174,7 +280,7 @@ export default function ExpenseScreen() {
           onPress={() => setActiveSegment("dashboard")}
         >
           <Text style={[styles.segmentText, activeSegment === "dashboard" && styles.segmentTextActive]}>
-            Dashboard
+            Tổng quan
           </Text>
         </TouchableOpacity>
         <TouchableOpacity
@@ -182,7 +288,7 @@ export default function ExpenseScreen() {
           onPress={() => setActiveSegment("stats")}
         >
           <Text style={[styles.segmentText, activeSegment === "stats" && styles.segmentTextActive]}>
-            Stats
+            Thống kê
           </Text>
         </TouchableOpacity>
         <TouchableOpacity
@@ -190,7 +296,7 @@ export default function ExpenseScreen() {
           onPress={() => setActiveSegment("alerts")}
         >
           <Text style={[styles.segmentText, activeSegment === "alerts" && styles.segmentTextActive]}>
-            Alerts
+            Cảnh báo
           </Text>
         </TouchableOpacity>
       </View>
@@ -232,17 +338,17 @@ export default function ExpenseScreen() {
               </View>
 
               <View style={styles.balanceInfo}>
-                <Text style={styles.balanceSubTitle}>Spent this month</Text>
+                <Text style={styles.balanceSubTitle}>Đã chi tháng này</Text>
                 <Text style={styles.balanceSpentVal}>{formatCurrency(totalSpent)}</Text>
-                <Text style={styles.balanceBudgetVal}>of {formatCurrency(totalBudget)} budget</Text>
+                <Text style={styles.balanceBudgetVal}>trên hạn mức {formatCurrency(totalBudget)}</Text>
               </View>
             </View>
 
             {/* Category horizontal bar chart breakdown */}
             <View style={styles.sectionBlock}>
-              <Text style={styles.sectionHeader}>By category</Text>
+              <Text style={styles.sectionHeader}>Theo danh mục</Text>
               {categoryChartSums.length === 0 ? (
-                <Text style={styles.emptyCardText}>No spend data this month.</Text>
+                <Text style={styles.emptyCardText}>Chưa có dữ liệu chi tiêu tháng này.</Text>
               ) : (
                 <View style={styles.chartBlock}>
                   {categoryChartSums.map((item, index) => (
@@ -270,9 +376,9 @@ export default function ExpenseScreen() {
 
             {/* Recent list cards */}
             <View style={styles.sectionBlock}>
-              <Text style={styles.sectionHeader}>Recent</Text>
+              <Text style={styles.sectionHeader}>Chi tiêu gần đây</Text>
               {expenses.length === 0 ? (
-                <Text style={styles.emptyCardText}>No transactions logged.</Text>
+                <Text style={styles.emptyCardText}>Chưa ghi nhận giao dịch nào.</Text>
               ) : (
                 <View style={styles.recentList}>
                   {expenses.slice(0, 5).map((item) => {
@@ -287,7 +393,7 @@ export default function ExpenseScreen() {
                           <Ionicons name={(cat.icon + "-outline") as any} size={13} color={cat.color} />
                           <View>
                             <Text style={styles.recentDesc}>{item.description || cat.name}</Text>
-                            <Text style={styles.recentDate}>Today</Text>
+                            <Text style={styles.recentDate}>Hôm nay</Text>
                           </View>
                         </View>
                         <Text style={styles.recentAmount}>{formatCurrency(item.amount)}</Text>
@@ -318,27 +424,27 @@ export default function ExpenseScreen() {
                 <View style={[styles.barColumn, { height: "55%" }]} />
               </View>
               <View style={styles.statsLabelRow}>
-                <Text style={styles.statsLabel}>Mon</Text>
-                <Text style={styles.statsLabel}>Tue</Text>
-                <Text style={styles.statsLabel}>Wed</Text>
-                <Text style={styles.statsLabel}>Thu</Text>
-                <Text style={[styles.statsLabel, styles.statsLabelActive]}>Fri</Text>
-                <Text style={styles.statsLabel}>Sat</Text>
-                <Text style={styles.statsLabel}>Sun</Text>
+                <Text style={styles.statsLabel}>T2</Text>
+                <Text style={styles.statsLabel}>T3</Text>
+                <Text style={styles.statsLabel}>T4</Text>
+                <Text style={styles.statsLabel}>T5</Text>
+                <Text style={[styles.statsLabel, styles.statsLabelActive]}>T6</Text>
+                <Text style={styles.statsLabel}>T7</Text>
+                <Text style={styles.statsLabel}>CN</Text>
               </View>
             </View>
 
             {/* Total cards split */}
             <View style={styles.splitGrid}>
               <View style={styles.splitCardCream}>
-                <Text style={styles.splitCardLabel}>Total spent</Text>
+                <Text style={styles.splitCardLabel}>Tổng chi tiêu</Text>
                 <Text style={styles.splitCardVal}>{totalSpent.toLocaleString()}</Text>
-                <Text style={styles.splitCardUnit}>₫ this month</Text>
+                <Text style={styles.splitCardUnit}>₫ tháng này</Text>
               </View>
               <View style={styles.splitCardGreen}>
-                <Text style={styles.splitCardLabelGreen}>Remaining</Text>
+                <Text style={styles.splitCardLabelGreen}>Còn lại</Text>
                 <Text style={styles.splitCardValGreen}>{remainingBudget.toLocaleString()}</Text>
-                <Text style={styles.splitCardUnitGreen}>₫ left</Text>
+                <Text style={styles.splitCardUnitGreen}>₫ ngân sách</Text>
               </View>
             </View>
 
@@ -351,7 +457,7 @@ export default function ExpenseScreen() {
                   </View>
                   <View>
                     <Text style={styles.topCategoryTitle}>{topCategorySum.name}</Text>
-                    <Text style={styles.topCategorySub}>Top category</Text>
+                    <Text style={styles.topCategorySub}>Danh mục chi nhiều nhất</Text>
                   </View>
                 </View>
                 <View style={styles.topCategoryRight}>
@@ -376,11 +482,11 @@ export default function ExpenseScreen() {
                 <Ionicons name="warning" size={13} color="#fff" />
               </View>
               <View style={styles.alertDetails}>
-                <Text style={styles.alertTitleWarning}>Budget Alert — Food & Drink</Text>
+                <Text style={styles.alertTitleWarning}>Cảnh báo hạn mức — Ăn uống</Text>
                 <Text style={styles.alertBodyWarning}>
-                  You've used 80% of your monthly Food & Drink budget.
+                  Bạn đã dùng hết 80% hạn mức Ăn uống của tháng này.
                 </Text>
-                <Text style={styles.alertTimeWarning}>2m ago</Text>
+                <Text style={styles.alertTimeWarning}>2 phút trước</Text>
               </View>
             </View>
 
@@ -390,11 +496,11 @@ export default function ExpenseScreen() {
                 <Text style={styles.alertAvatarText}>A</Text>
               </View>
               <View style={styles.alertDetails}>
-                <Text style={styles.alertTitleNormal}>An shared a photo</Text>
+                <Text style={styles.alertTitleNormal}>An đã chia sẻ ảnh</Text>
                 <Text style={styles.alertBodyNormal}>
-                  Grab về nhà 35K 🛵 · 35,000 ₫ logged
+                  Grab về nhà 35K 🛵 · Đã lưu 35,000 ₫
                 </Text>
-                <Text style={styles.alertTimeNormal}>1h ago</Text>
+                <Text style={styles.alertTimeNormal}>1 giờ trước</Text>
               </View>
             </View>
 
@@ -404,11 +510,11 @@ export default function ExpenseScreen() {
                 <Ionicons name="card" size={13} color={THEME.green.text} />
               </View>
               <View style={styles.alertDetails}>
-                <Text style={styles.alertTitleNormal}>Expense logged</Text>
+                <Text style={styles.alertTitleNormal}>Chi tiêu đã tự động lưu</Text>
                 <Text style={styles.alertBodyNormal}>
-                  Coffee sáng 45k · 45,000 ₫ · Food & Drink
+                  Coffee sáng 45k · 45,000 ₫ · Ăn uống
                 </Text>
-                <Text style={styles.alertTimeNormal}>Yesterday</Text>
+                <Text style={styles.alertTimeNormal}>Hôm qua</Text>
               </View>
             </View>
 
@@ -418,11 +524,11 @@ export default function ExpenseScreen() {
                 <Ionicons name="ban" size={13} color="#fff" />
               </View>
               <View style={styles.alertDetails}>
-                <Text style={styles.alertTitleDanger}>Budget exceeded — Transport</Text>
+                <Text style={styles.alertTitleDanger}>Chi tiêu vượt hạn mức — Di chuyển</Text>
                 <Text style={styles.alertBodyDanger}>
-                  You've gone over your Transport budget this month.
+                  Bạn đã vượt hạn mức Di chuyển của tháng này.
                 </Text>
-                <Text style={styles.alertTimeDanger}>3 days ago</Text>
+                <Text style={styles.alertTimeDanger}>3 ngày trước</Text>
               </View>
             </View>
           </View>
@@ -438,7 +544,7 @@ export default function ExpenseScreen() {
         <View style={styles.modalContainer}>
           <View style={styles.modalHeader}>
             <TouchableOpacity onPress={() => setIsAddModalVisible(false)}>
-              <Text style={styles.cancelText}>Cancel</Text>
+              <Text style={styles.cancelText}>Hủy</Text>
             </TouchableOpacity>
             <Text style={styles.modalHeaderTitle}>Ghi chi tiêu</Text>
             <ColorPlaceholder />
@@ -502,6 +608,14 @@ export default function ExpenseScreen() {
                     </TouchableOpacity>
                   );
                 })}
+                <TouchableOpacity
+                  key="add-new-chip"
+                  style={[styles.categoryCell, { backgroundColor: THEME.backgroundSecondary, borderWidth: 1, borderColor: THEME.borderSecondary, borderStyle: 'dashed' }]}
+                  onPress={() => { /* Handle add new category logic */ }}
+                >
+                  <Ionicons name="add" size={20} color={THEME.textTertiary} />
+                  <Text style={styles.categoryCellText}>Mới</Text>
+                </TouchableOpacity>
               </View>
             </View>
 
@@ -602,39 +716,109 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    paddingHorizontal: 16,
-    paddingVertical: 10,
+    paddingHorizontal: 18,
+    paddingVertical: 16,
   },
   headerLeft: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 8,
+    gap: 10,
   },
   headerTitle: {
-    fontSize: 16,
-    fontWeight: "600",
+    fontSize: 22,
+    fontWeight: "700",
     color: THEME.textPrimary,
   },
   monthPill: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 4,
     backgroundColor: THEME.backgroundSecondary,
     borderWidth: 0.5,
     borderColor: THEME.borderSecondary,
-    borderRadius: 8,
-    paddingHorizontal: 8,
-    paddingVertical: 4,
+    borderRadius: 10,
+    paddingHorizontal: 10,
+    paddingVertical: 7,
   },
   monthPillText: {
-    fontSize: 9,
+    fontSize: 13,
     color: THEME.textSecondary,
     fontWeight: "500",
   },
+  // Month picker modal
+  pickerOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.5)",
+    justifyContent: "center",
+    alignItems: "center",
+    paddingHorizontal: 24,
+  },
+  pickerCard: {
+    backgroundColor: THEME.backgroundPrimary,
+    borderRadius: 20,
+    borderWidth: 0.5,
+    borderColor: THEME.borderPrimary,
+    paddingHorizontal: 20,
+    paddingVertical: 20,
+    width: "100%",
+  },
+  pickerYearRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginBottom: 18,
+  },
+  pickerYearBtn: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: THEME.backgroundSecondary,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  pickerYearText: {
+    fontSize: 20,
+    fontWeight: "700",
+    color: THEME.textPrimary,
+  },
+  pickerMonthGrid: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 8,
+  },
+  pickerMonthCell: {
+    width: "22%",
+    flexGrow: 1,
+    paddingVertical: 12,
+    borderRadius: 12,
+    backgroundColor: THEME.backgroundSecondary,
+    borderWidth: 0.5,
+    borderColor: THEME.borderSecondary,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  pickerMonthCellActive: {
+    backgroundColor: THEME.buttonPrimary,
+    borderColor: THEME.buttonPrimary,
+  },
+  pickerMonthCellDisabled: {
+    opacity: 0.3,
+  },
+  pickerMonthText: {
+    fontSize: 13,
+    color: THEME.textPrimary,
+    fontWeight: "500",
+  },
+  pickerMonthTextActive: {
+    color: THEME.buttonText,
+    fontWeight: "700",
+  },
+  pickerMonthTextDisabled: {
+    color: THEME.textTertiary,
+  },
   addIconCircle: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
+    width: 36,
+    height: 36,
+    borderRadius: 18,
     backgroundColor: THEME.buttonPrimary,
     justifyContent: "center",
     alignItems: "center",
@@ -643,15 +827,15 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     marginHorizontal: 16,
     backgroundColor: THEME.backgroundSecondary,
-    borderRadius: 10,
+    borderRadius: 12,
     padding: 2,
-    marginVertical: 10,
+    marginVertical: 16,
   },
   segmentBtn: {
     flex: 1,
-    paddingVertical: 8,
+    paddingVertical: 12,
     alignItems: "center",
-    borderRadius: 8,
+    borderRadius: 10,
   },
   segmentBtnActive: {
     backgroundColor: THEME.backgroundPrimary,
@@ -659,7 +843,7 @@ const styles = StyleSheet.create({
     borderColor: THEME.borderSecondary,
   },
   segmentText: {
-    fontSize: 11,
+    fontSize: 14,
     color: THEME.textTertiary,
   },
   segmentTextActive: {
@@ -673,20 +857,20 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
   },
   balanceRingCard: {
-    backgroundColor: "#F1EFE8", // Hardcoded background from mockup
-    borderRadius: 14,
+    backgroundColor: "#F1EFE8",
+    borderRadius: 16,
     borderWidth: 0.5,
-    borderColor: "#D3D1C7", // Sandbox mockup border
-    paddingHorizontal: 14,
-    paddingVertical: 12,
+    borderColor: "#D3D1C7",
+    paddingHorizontal: 18,
+    paddingVertical: 16,
     flexDirection: "row",
     alignItems: "center",
-    gap: 16,
-    marginBottom: 12,
+    gap: 18,
+    marginBottom: 16,
   },
   ringFrame: {
-    width: 52,
-    height: 52,
+    width: 56,
+    height: 56,
     position: "relative",
     justifyContent: "center",
     alignItems: "center",
@@ -697,52 +881,52 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   ringPercentageText: {
-    fontSize: 9,
-    fontWeight: "bold",
+    fontSize: 13,
+    fontWeight: "700",
     color: "#2C2C2A",
   },
   balanceInfo: {
     flex: 1,
   },
   balanceSubTitle: {
-    fontSize: 8,
+    fontSize: 12,
     color: "#5F5E5A",
-    marginBottom: 2,
+    marginBottom: 4,
   },
   balanceSpentVal: {
-    fontSize: 14,
-    fontWeight: "bold",
+    fontSize: 20,
+    fontWeight: "700",
     color: "#2C2C2A",
   },
   balanceBudgetVal: {
-    fontSize: 8,
+    fontSize: 12,
     color: "#888780",
-    marginTop: 2,
+    marginTop: 4,
   },
   sectionBlock: {
-    marginBottom: 16,
+    marginBottom: 20,
   },
   sectionHeader: {
-    fontSize: 10,
-    fontWeight: "bold",
+    fontSize: 14,
+    fontWeight: "700",
     color: THEME.textSecondary,
-    marginBottom: 8,
+    marginBottom: 10,
     textTransform: "uppercase",
   },
   chartBlock: {
-    gap: 8,
+    gap: 10,
   },
   chartBarRow: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 8,
+    gap: 10,
   },
   chartIcon: {
-    width: 14,
+    width: 16,
   },
   trackContainer: {
     flex: 1,
-    height: 5,
+    height: 6,
     backgroundColor: THEME.backgroundSecondary,
     borderRadius: 3,
     overflow: "hidden",
@@ -752,13 +936,13 @@ const styles = StyleSheet.create({
     borderRadius: 3,
   },
   chartValText: {
-    fontSize: 8,
+    fontSize: 12,
     color: THEME.textSecondary,
-    minWidth: 34,
+    minWidth: 40,
     textAlign: "right",
   },
   recentList: {
-    gap: 6,
+    gap: 8,
   },
   recentItem: {
     flexDirection: "row",
@@ -767,65 +951,65 @@ const styles = StyleSheet.create({
     backgroundColor: THEME.backgroundSecondary,
     borderWidth: 0.5,
     borderColor: THEME.borderSecondary,
-    borderRadius: 8,
-    paddingHorizontal: 8,
-    paddingVertical: 6,
+    borderRadius: 12,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
   },
   recentLeft: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 6,
+    gap: 10,
   },
   recentDesc: {
-    fontSize: 9,
+    fontSize: 14,
     color: THEME.textPrimary,
   },
   recentDate: {
-    fontSize: 7,
+    fontSize: 11,
     color: THEME.textTertiary,
   },
   recentAmount: {
-    fontSize: 9,
+    fontSize: 14,
     fontWeight: "600",
     color: THEME.textPrimary,
   },
   emptyCardText: {
-    fontSize: 11,
+    fontSize: 15,
     color: THEME.textTertiary,
     textAlign: "center",
-    paddingVertical: 14,
+    paddingVertical: 20,
   },
   statsChartCard: {
     backgroundColor: THEME.backgroundSecondary,
     borderWidth: 0.5,
     borderColor: THEME.borderSecondary,
-    borderRadius: 12,
-    padding: 10,
-    marginBottom: 12,
+    borderRadius: 14,
+    padding: 14,
+    marginBottom: 16,
   },
   statsBarsContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "flex-end",
-    height: 52,
-    gap: 2,
-    marginBottom: 6,
+    height: 60,
+    gap: 4,
+    marginBottom: 8,
   },
   barColumn: {
     flex: 1,
-    backgroundColor: "#B4B2A9", // Gray/Sand bar
-    borderTopLeftRadius: 3,
-    borderTopRightRadius: 3,
+    backgroundColor: "#B4B2A9",
+    borderTopLeftRadius: 4,
+    borderTopRightRadius: 4,
   },
   barColumnActive: {
-    backgroundColor: "#2C2C2A", // Current active highlighted bar
+    backgroundColor: "#2C2C2A",
   },
   statsLabelRow: {
     flexDirection: "row",
     justifyContent: "space-between",
   },
   statsLabel: {
-    fontSize: 7,
+    fontSize: 11,
     color: THEME.textTertiary,
     textAlign: "center",
     flex: 1,
@@ -836,62 +1020,62 @@ const styles = StyleSheet.create({
   },
   splitGrid: {
     flexDirection: "row",
-    gap: 6,
-    marginBottom: 12,
+    gap: 8,
+    marginBottom: 16,
   },
   splitCardCream: {
     flex: 1,
     backgroundColor: "#F1EFE8",
     borderWidth: 0.5,
     borderColor: "#D3D1C7",
-    borderRadius: 10,
-    padding: 8,
+    borderRadius: 12,
+    padding: 12,
   },
   splitCardLabel: {
-    fontSize: 7,
+    fontSize: 11,
     color: "#5F5E5A",
-    marginBottom: 2,
+    marginBottom: 4,
   },
   splitCardVal: {
-    fontSize: 12,
-    fontWeight: "bold",
+    fontSize: 16,
+    fontWeight: "700",
     color: "#2C2C2A",
   },
   splitCardUnit: {
-    fontSize: 7,
+    fontSize: 11,
     color: "#888780",
-    marginTop: 1,
+    marginTop: 2,
   },
   splitCardGreen: {
     flex: 1,
     backgroundColor: THEME.green.bg,
     borderWidth: 0.5,
     borderColor: "#9FE1CB",
-    borderRadius: 10,
-    padding: 8,
+    borderRadius: 12,
+    padding: 12,
   },
   splitCardLabelGreen: {
-    fontSize: 7,
+    fontSize: 11,
     color: THEME.green.text,
-    marginBottom: 2,
+    marginBottom: 4,
   },
   splitCardValGreen: {
-    fontSize: 12,
-    fontWeight: "bold",
+    fontSize: 16,
+    fontWeight: "700",
     color: "#085041",
   },
   splitCardUnitGreen: {
-    fontSize: 7,
+    fontSize: 11,
     color: THEME.green.solid,
-    marginTop: 1,
+    marginTop: 2,
   },
   topCategoryCard: {
     backgroundColor: THEME.backgroundSecondary,
     borderWidth: 0.5,
     borderColor: THEME.borderSecondary,
-    borderRadius: 10,
-    paddingHorizontal: 10,
-    paddingVertical: 8,
+    borderRadius: 12,
+    paddingHorizontal: 14,
+    paddingVertical: 12,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
@@ -899,51 +1083,51 @@ const styles = StyleSheet.create({
   topCategoryLeft: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 6,
+    gap: 8,
   },
   topCategoryIconBox: {
-    width: 22,
-    height: 22,
-    borderRadius: 6,
+    width: 28,
+    height: 28,
+    borderRadius: 8,
     justifyContent: "center",
     alignItems: "center",
   },
   topCategoryTitle: {
-    fontSize: 9,
-    fontWeight: "bold",
+    fontSize: 13,
+    fontWeight: "700",
     color: THEME.textPrimary,
   },
   topCategorySub: {
-    fontSize: 7,
+    fontSize: 11,
     color: THEME.textTertiary,
   },
   topCategoryRight: {
     alignItems: "flex-end",
   },
   topCategoryValue: {
-    fontSize: 9,
-    fontWeight: "bold",
+    fontSize: 13,
+    fontWeight: "700",
     color: THEME.textPrimary,
   },
   topCategoryRatio: {
-    fontSize: 7,
+    fontSize: 11,
     color: THEME.textTertiary,
   },
   alertCardWarning: {
     backgroundColor: "#FAEEDA",
     borderWidth: 0.5,
     borderColor: "#FAC775",
-    borderRadius: 12,
-    padding: 10,
+    borderRadius: 14,
+    padding: 14,
     flexDirection: "row",
-    gap: 8,
+    gap: 10,
     alignItems: "flex-start",
-    marginBottom: 8,
+    marginBottom: 10,
   },
   alertIconBox: {
-    width: 26,
-    height: 26,
-    borderRadius: 8,
+    width: 32,
+    height: 32,
+    borderRadius: 10,
     justifyContent: "center",
     alignItems: "center",
   },
@@ -951,36 +1135,36 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   alertTitleWarning: {
-    fontSize: 9,
-    fontWeight: "bold",
+    fontSize: 13,
+    fontWeight: "700",
     color: "#633806",
-    marginBottom: 2,
+    marginBottom: 4,
   },
   alertBodyWarning: {
-    fontSize: 8,
+    fontSize: 12,
     color: "#854F0B",
-    lineHeight: 11,
+    lineHeight: 16,
   },
   alertTimeWarning: {
-    fontSize: 7,
+    fontSize: 11,
     color: "#BA7517",
-    marginTop: 4,
+    marginTop: 6,
   },
   alertCardNormal: {
     backgroundColor: THEME.backgroundSecondary,
     borderWidth: 0.5,
     borderColor: THEME.borderSecondary,
-    borderRadius: 12,
-    padding: 10,
+    borderRadius: 14,
+    padding: 14,
     flexDirection: "row",
-    gap: 8,
+    gap: 10,
     alignItems: "flex-start",
-    marginBottom: 8,
+    marginBottom: 10,
   },
   alertAvatar: {
-    width: 26,
-    height: 26,
-    borderRadius: 13,
+    width: 32,
+    height: 32,
+    borderRadius: 16,
     backgroundColor: THEME.green.bg,
     borderWidth: 1.5,
     borderColor: "#9FE1CB",
@@ -988,30 +1172,30 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   alertAvatarText: {
-    fontSize: 9,
+    fontSize: 13,
     color: THEME.green.text,
     fontWeight: "bold",
   },
   alertTitleNormal: {
-    fontSize: 9,
-    fontWeight: "bold",
+    fontSize: 13,
+    fontWeight: "700",
     color: THEME.textPrimary,
-    marginBottom: 2,
+    marginBottom: 4,
   },
   alertBodyNormal: {
-    fontSize: 8,
+    fontSize: 12,
     color: THEME.textSecondary,
-    lineHeight: 11,
+    lineHeight: 16,
   },
   alertTimeNormal: {
-    fontSize: 7,
+    fontSize: 11,
     color: THEME.textTertiary,
-    marginTop: 4,
+    marginTop: 6,
   },
   alertIconBoxNormal: {
-    width: 26,
-    height: 26,
-    borderRadius: 8,
+    width: 32,
+    height: 32,
+    borderRadius: 10,
     backgroundColor: THEME.green.bg,
     justifyContent: "center",
     alignItems: "center",
@@ -1020,28 +1204,28 @@ const styles = StyleSheet.create({
     backgroundColor: "#FCEBEB",
     borderWidth: 0.5,
     borderColor: "#F7C1C1",
-    borderRadius: 12,
-    padding: 10,
+    borderRadius: 14,
+    padding: 14,
     flexDirection: "row",
-    gap: 8,
+    gap: 10,
     alignItems: "flex-start",
-    marginBottom: 8,
+    marginBottom: 10,
   },
   alertTitleDanger: {
-    fontSize: 9,
-    fontWeight: "bold",
+    fontSize: 13,
+    fontWeight: "700",
     color: "#501313",
-    marginBottom: 2,
+    marginBottom: 4,
   },
   alertBodyDanger: {
-    fontSize: 8,
+    fontSize: 12,
     color: "#791F1F",
-    lineHeight: 11,
+    lineHeight: 16,
   },
   alertTimeDanger: {
-    fontSize: 7,
+    fontSize: 11,
     color: "#A32D2D",
-    marginTop: 4,
+    marginTop: 6,
   },
   modalContainer: {
     flex: 1,
@@ -1053,16 +1237,16 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     paddingHorizontal: 20,
-    paddingVertical: 12,
+    paddingVertical: 14,
   },
   cancelText: {
     color: THEME.textSecondary,
-    fontSize: 15,
+    fontSize: 16,
   },
   modalHeaderTitle: {
     color: THEME.textPrimary,
-    fontSize: 16,
-    fontWeight: "bold",
+    fontSize: 18,
+    fontWeight: "700",
   },
   modalForm: {
     paddingHorizontal: 24,
@@ -1070,46 +1254,46 @@ const styles = StyleSheet.create({
   },
   amountInputContainer: {
     alignItems: "center",
-    marginVertical: 20,
+    marginVertical: 24,
   },
   amountLabel: {
-    fontSize: 11,
-    fontWeight: "bold",
+    fontSize: 14,
+    fontWeight: "700",
     color: THEME.textSecondary,
     textTransform: "uppercase",
-    marginBottom: 6,
+    marginBottom: 8,
   },
   amountInput: {
     color: THEME.textPrimary,
-    fontSize: 44,
-    fontWeight: "bold",
+    fontSize: 48,
+    fontWeight: "700",
     textAlign: "center",
     width: "100%",
   },
   inputGroup: {
-    marginBottom: 20,
+    marginBottom: 24,
   },
   groupLabel: {
-    fontSize: 12,
-    fontWeight: "bold",
+    fontSize: 14,
+    fontWeight: "700",
     color: THEME.textSecondary,
-    marginBottom: 8,
+    marginBottom: 10,
     textTransform: "uppercase",
   },
   modalTextInput: {
     backgroundColor: THEME.backgroundSecondary,
-    borderRadius: 12,
+    borderRadius: 14,
     borderWidth: 0.5,
     borderColor: THEME.borderSecondary,
     color: THEME.textPrimary,
     paddingHorizontal: 16,
-    paddingVertical: 14,
+    paddingVertical: 16,
     fontSize: 16,
   },
   categoryGrid: {
     flexDirection: "row",
     flexWrap: "wrap",
-    gap: 8,
+    gap: 10,
   },
   categoryCell: {
     width: "31%",
@@ -1117,22 +1301,22 @@ const styles = StyleSheet.create({
     backgroundColor: THEME.backgroundSecondary,
     borderWidth: 0.5,
     borderColor: THEME.borderSecondary,
-    borderRadius: 12,
+    borderRadius: 14,
     justifyContent: "center",
     alignItems: "center",
-    gap: 6,
+    gap: 8,
   },
   categoryCellText: {
     color: THEME.textSecondary,
-    fontSize: 11,
+    fontSize: 13,
   },
   saveBtn: {
     backgroundColor: THEME.buttonPrimary,
-    borderRadius: 12,
+    borderRadius: 14,
     paddingVertical: 16,
     alignItems: "center",
     justifyContent: "center",
-    marginTop: 10,
+    marginTop: 14,
   },
   saveBtnDisabled: {
     opacity: 0.6,
@@ -1140,7 +1324,7 @@ const styles = StyleSheet.create({
   saveBtnText: {
     color: THEME.buttonText,
     fontSize: 16,
-    fontWeight: "bold",
+    fontWeight: "700",
   },
   overlay: {
     flex: 1,
@@ -1150,7 +1334,7 @@ const styles = StyleSheet.create({
   },
   detailCard: {
     backgroundColor: THEME.backgroundPrimary,
-    borderRadius: 24,
+    borderRadius: 28,
     borderWidth: 0.5,
     borderColor: THEME.borderPrimary,
     padding: 24,
@@ -1159,15 +1343,15 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 20,
+    marginBottom: 24,
   },
   detailTitle: {
     color: THEME.textPrimary,
-    fontSize: 18,
-    fontWeight: "bold",
+    fontSize: 20,
+    fontWeight: "700",
   },
   detailContent: {
-    gap: 16,
+    gap: 18,
   },
   detailRow: {
     flexDirection: "row",
@@ -1176,17 +1360,17 @@ const styles = StyleSheet.create({
   },
   detailLabel: {
     color: THEME.textSecondary,
-    fontSize: 14,
+    fontSize: 15,
   },
   detailVal: {
     color: THEME.textPrimary,
-    fontSize: 14,
+    fontSize: 15,
     fontWeight: "600",
   },
   detailAmount: {
     color: THEME.textPrimary,
-    fontSize: 18,
-    fontWeight: "bold",
+    fontSize: 20,
+    fontWeight: "700",
   },
   deleteBtn: {
     flexDirection: "row",
@@ -1194,13 +1378,13 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     gap: 8,
     backgroundColor: THEME.red.solid,
-    borderRadius: 12,
-    paddingVertical: 14,
-    marginTop: 20,
+    borderRadius: 14,
+    paddingVertical: 16,
+    marginTop: 24,
   },
   deleteBtnText: {
     color: "#fff",
-    fontSize: 14,
-    fontWeight: "bold",
+    fontSize: 16,
+    fontWeight: "700",
   },
 });
